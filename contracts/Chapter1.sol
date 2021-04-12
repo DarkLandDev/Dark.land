@@ -59,7 +59,7 @@ contract Chapter1 is Ownable{
     InvestInfo[] allInvest;
     mapping(uint256 => uint256) investOrders;
     
-    mapping(address => uint256) public pIDxAddr; // (addr => pID) returns player id by address;
+    mapping(address => uint256) public pIDxAddr;// (addr => pID) returns player id by address;
     mapping(uint256 => SafeBox) public safeBoxs;// (pId => SafeBox) returns SafeBox by pID;
     mapping(uint256 => LuckBox) public luckBoxs;// (rounNumber => LuckBox) returns LuckBox;
     mapping(uint256 => DLData.Player) public players;// all players
@@ -241,7 +241,7 @@ contract Chapter1 is Ownable{
          && investOrders[_pId] <= allInvest.length 
          && allInvest[(investOrders[_pId]).sub(1)].pID == _pId
          && allInvest.length >= investOrders[_pId]){
-            uint256 _deposit = allInvest[investOrders[_pId].sub(1)].invest;
+            uint256 _deposit = (allInvest[investOrders[_pId].sub(1)].invest).div(1 ether);
             uint256 _diff = allInvest.length.sub(investOrders[_pId]);
             if(_diff < _deposit){
                 _collectable = _deposit.sub(_diff);
@@ -394,5 +394,4 @@ contract Chapter1 is Ownable{
         _account.transfer(_m);
 
     }
-    
 }
