@@ -257,9 +257,12 @@ contract Chapter1 is Ownable{
         returns(RoundInfo memory)
     {
         require(_r <= curRoundNumber && 0 < _r,"Only get the previous round..");
-        require(_r == curRoundNumber && !curRound.ended,"Please waiting next round...");
+        if(curRoundNumber == _r){
+            return RoundInfo(curRound,curDragon.hide ? 1 : 0,curRound.ended ? 1 : 0,luckBoxs[_r]);
+        }else{
+            return RoundInfo(pastRound[_r],deadDragon[_r].hp,deadDragon[_r].sleep,luckBoxs[_r]);
+        }
        
-        return RoundInfo(pastRound[_r],deadDragon[_r].hp,deadDragon[_r].sleep,luckBoxs[_r]);
     }
     
     function endRound()
