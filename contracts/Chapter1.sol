@@ -11,7 +11,6 @@ contract Chapter1 is Ownable{
     using SafeMath for uint256;
     using NameFilter for string;
     
-    uint256 roundMax = 20;
     uint256 initHp = 1000;
     uint8 race = 0;
     uint256 registrationFee = 10 ether; // price to register a name
@@ -38,7 +37,7 @@ contract Chapter1 is Ownable{
         mapping(uint256 => uint256) records;
     }
     
-     struct RoundInfo{
+    struct RoundInfo{
         DLData.Round round;
         uint256 hp;
         uint256 sleep;
@@ -55,7 +54,6 @@ contract Chapter1 is Ownable{
         uint256 pID;
         uint256 invest;
     }
-    
     InvestInfo[] allInvest;
     mapping(uint256 => uint256) investOrders;
     
@@ -119,15 +117,17 @@ contract Chapter1 is Ownable{
         onlyOwner()
         public
     {
-        require(curRoundNumber < roundMax,"Maximum is 20,exceed...");
+        require(curDragon.alive == false && curRound.started == false, "Please wait the round.");
         
         delete allInvest;
-        
         //new Dragon;
         uint256 _now = block.timestamp;
         uint256 _R = curRoundNumber.add(1);
-        
         uint256 _hp = randMod(_r).mul(initHp).mul(10 ** 18);
+        if(curRoundNumber > 0){
+            _hp = _hp.add(deadDragon[curRoundNumber.sub(1)].hp);
+        }
+        
         uint256 _sleep = randMod(_h).mul(60);//s
         curDragon = Dragon(_R,_hp,_sleep,true,_now,false);
         
