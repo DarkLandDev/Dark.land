@@ -71,7 +71,7 @@ contract Chapter1 is Ownable{
     DLData.Round private curRound;
     
     modifier isActivated() {
-        require(curDragon.alive == true && curRound.started == true, "Please wait for the dragon to be summoned..."); 
+        require(curDragon.alive == true && curRound.started == true, "Please wait for the dragon..."); 
         _;
     }
     
@@ -117,7 +117,7 @@ contract Chapter1 is Ownable{
         onlyOwner()
         public
     {
-        require(curDragon.alive == false && curRound.started == false, "Please wait the round.");
+        require(curDragon.alive == false && curRound.started == false, "Please wait the round over.");
         
         delete allInvest;
         //new Dragon;
@@ -230,6 +230,15 @@ contract Chapter1 is Ownable{
         );
     }
     
+    function getSlayers()
+        isHuman
+        public
+        view
+        returns(DLData.Player[] memory)
+    {
+        return dragonSlayers;
+    }
+    
     function getPlayerInfo()
         isHuman()
         public
@@ -247,7 +256,7 @@ contract Chapter1 is Ownable{
                 _collectable = _deposit.sub(_diff);
             }
          }
-         return playerInfo(players[_pId],safeBoxs[_pId].earned,safeBoxs[_pId].total,_collectable);
+         return playerInfo(players[_pId],safeBoxs[_pId].earned,safeBoxs[_pId].records[curRoundNumber],_collectable);
     }
     
     function getRoundInfo(uint256 _r)
@@ -256,9 +265,9 @@ contract Chapter1 is Ownable{
         view
         returns(RoundInfo memory)
     {
-        require(_r <= curRoundNumber && 0 < _r,"Only get the previous round..");
+        require(_r <= curRoundNumber,"Only get the previous round...");
         if(curRoundNumber == _r){
-            return RoundInfo(curRound,curDragon.hide ? 1 : 0,curRound.ended ? 1 : 0,luckBoxs[_r]);
+            return RoundInfo(curRound,curDragon.hide ? 1 : 0,0,luckBoxs[_r]);
         }else{
             return RoundInfo(pastRound[_r],deadDragon[_r].hp,deadDragon[_r].sleep,luckBoxs[_r]);
         }
@@ -298,7 +307,6 @@ contract Chapter1 is Ownable{
 
         dragonSlayers.push(players[_pIdxWinner]);
         delete allInvest;
-        
     }
     
     function sleep()
@@ -391,10 +399,8 @@ contract Chapter1 is Ownable{
     function pay(address payable _account, uint256 _m)
         private
     {
-
         require(_account != address(0), "note: the account is the zero address");
         require(_m > 0, "note : zero withdraw not allowed");
         _account.transfer(_m);
-
     }
 }
