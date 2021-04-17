@@ -125,7 +125,7 @@ contract Chapter1 is Ownable{
         uint256 _R = curRoundNumber.add(1);
         uint256 _hp = randMod(_r).mul(initHp).mul(10 ** 18);
         if(curRoundNumber > 0){
-            _hp = _hp.add(deadDragon[curRoundNumber.sub(1)].hp);
+            _hp = _hp.add(deadDragon[curRoundNumber].hp);
         }
         
         uint256 _sleep = randMod(_h).mul(60);//s
