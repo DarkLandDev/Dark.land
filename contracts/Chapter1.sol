@@ -18,6 +18,20 @@ contract Chapter1 is Ownable{
     uint256 public curRoundNumber = 0;// current round;
     uint256 public pID = 0;// total number of players;
     
+    event onBattle
+    (
+        uint256 curRoundNumber,
+        address repel,
+        address winner,
+        bool over,
+        uint256 total
+    );
+    
+    event onNewBattle
+    (
+        uint256 curRoundNumber
+    );
+    
     struct Dragon {
         uint256 number;
         uint256 hp;
@@ -102,15 +116,6 @@ contract Chapter1 is Ownable{
         
         _box.earned = 0;
         pay(payable(_box.addr), _m);
-        
-        emit DLData.onWithdraw
-        (
-            _pId,
-            msg.sender,
-            players[_pId].name,
-            _m,
-            block.timestamp
-        );
     }
     
     function newDragon(uint256 _r,uint256 _h)
@@ -132,11 +137,14 @@ contract Chapter1 is Ownable{
         curDragon = Dragon(_R,_hp,_sleep,true,_now,false);
         
         //new round;
-        curRound.number = _R;
-        curRound.strT = _now;
-        curRound.started = true;
+        curRound = DLData.Round(_R,_now,_now,true,false,0,0);
         
         curRoundNumber++;
+        
+        emit onNewBattle
+        (
+            curRoundNumber
+        );
     }
     
     function battle()
@@ -177,18 +185,16 @@ contract Chapter1 is Ownable{
         // is over?
         bool _o = over();
         
-        emit DLData.onBattle
+        
+        emit onBattle
         (
             curRoundNumber,
-            _pId,
-            msg.sender,
-            players[_pId].name,
-            luckBoxs[curRoundNumber].repel == msg.sender,
-            luckBoxs[curRoundNumber].winner == msg.sender,
+            luckBoxs[curRoundNumber].repel,
+            luckBoxs[curRoundNumber].winner,
             _o,
-            safeBoxs[_pId].records[curRoundNumber],
-            msg.value
+            curRound.ht
         );
+        
         
     }
     
@@ -213,21 +219,16 @@ contract Chapter1 is Ownable{
         public
         payable
     {
-       require (msg.value >= registrationFee, "umm.....  you have to pay the name fee");
+        require (msg.value >= registrationFee, "umm.....  you have to pay the name fee");
        
-       uint _pId = getPID(msg.sender);
-       DLData.Player storage _player = players[_pId];
-       require(_player.level > 0,"You need to have a badge");
+        uint _pId = getPID(msg.sender);
+        require(players[_pId].level > 0,"You need to have a badge");
        
-       bytes32 _name = NameFilter.nameFilter(_nameString);
-       _player.name = _name;
+        bytes32 _name = NameFilter.nameFilter(_nameString);
+        players[_pId].name = _name;
        
-       emit DLData.onRegisterName
-       (
-           _pId,
-           msg.sender,
-           _name
-        );
+        uint256 _pidDev = getPID(owner());
+        safeBoxs[_pidDev].earned = safeBoxs[_pidDev].earned.add(msg.value);
     }
     
     function getSlayers()
@@ -285,21 +286,22 @@ contract Chapter1 is Ownable{
         deadDragon[curRoundNumber] = curDragon;
         pastRound[curRoundNumber] = curRound;
         
-        uint256 _35p = curRound.ht.mul(35).div(100);
+        uint256 _30p = curRound.ht.mul(30).div(100);
+        uint256 _15p = curRound.ht.mul(15).div(100);
         uint256 _10p = curRound.ht.mul(10).div(100);
         
         //reward repel 10%;
         uint256 _pIdxRepel = pIDxAddr[luckBoxs[curRoundNumber].repel];
-        safeBoxs[_pIdxRepel].earned = safeBoxs[_pIdxRepel].earned.add(_10p);
+        safeBoxs[_pIdxRepel].earned = safeBoxs[_pIdxRepel].earned.add(_15p);
         DLData.Player storage _playerxRepel = players[_pIdxRepel];
-        _playerxRepel.badgs.push(2);
+        _playerxRepel.badges.push(2);
         
         //reward winner 35%;
         uint256 _pIdxWinner = pIDxAddr[luckBoxs[curRoundNumber].winner];
-        safeBoxs[_pIdxWinner].earned = safeBoxs[_pIdxWinner].earned.add(_35p);
+        safeBoxs[_pIdxWinner].earned = safeBoxs[_pIdxWinner].earned.add(_30p);
         DLData.Player storage _playerxWinner = players[_pIdxWinner];
-        _playerxWinner.flag = 1;
-        _playerxWinner.badgs.push(1);
+        _playerxWinner.level = 1;
+        _playerxWinner.badges.push(1);
         
         //reward dev 10%
         uint256 _pidDev = getPID(owner());

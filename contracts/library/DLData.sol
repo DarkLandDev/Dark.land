@@ -8,7 +8,7 @@ library DLData{
         uint256 flag;   // flag
         uint8 level;    //0 - tribe;1 - knight;2 - lord;3-king;
         uint8 race;     //0 - Ocro;1 - Human;2-Elve ；3-Mage
-        uint[] badgs;
+        uint[] badges;
     }
     
     struct Round {
@@ -21,32 +21,4 @@ library DLData{
         uint256 collectPot;
     }
     
-    event onBattle
-    (
-        uint256 curRoundNumber,
-        uint256 indexed playerID,
-        address playerAddress,
-        bytes32 playerName,
-        bool repel,
-        bool winner,
-        bool over,
-        uint256 total,
-        uint256 htIn
-    );
-    
-    event onRegisterName
-    (
-        uint256 indexed playerID,
-        address playerAddress,
-        bytes32 playerName
-    );
-    
-    event onWithdraw
-    (
-        uint256 indexed playerID,
-        address playerAddress,
-        bytes32 playerName,
-        uint256 htOut,
-        uint256 timeStamp
-    );
 }
