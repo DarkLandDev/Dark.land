@@ -11,12 +11,12 @@ contract Chapter1 is Ownable{
     using SafeMath for uint256;
     using NameFilter for string;
     
-    uint256 initHp = 1000;
     uint8 race = 0;
+    uint256 initHp = 1000;
     uint256 registrationFee = 10 ether; // price to register a name
     
-    uint256 public curRoundNumber = 0;// current round;
     uint256 public pID = 0;// total number of players;
+    uint256 public curRoundNumber = 0;// current round;
     
     event onBattle
     (
@@ -27,7 +27,7 @@ contract Chapter1 is Ownable{
         uint256 total
     );
     
-    event onNewBattle
+    event onNewDragon
     (
         uint256 curRoundNumber
     );
@@ -47,7 +47,6 @@ contract Chapter1 is Ownable{
     struct SafeBox{
         address addr;
         uint256 earned;
-        uint256 total;
         mapping(uint256 => uint256) records;
     }
     
@@ -57,7 +56,7 @@ contract Chapter1 is Ownable{
         uint256 sleep;
         LuckBox box;
     }
-    struct playerInfo{
+    struct PlayerInfo{
         DLData.Player player;
         uint256 earned;
         uint256 total;
@@ -141,7 +140,7 @@ contract Chapter1 is Ownable{
         
         curRoundNumber++;
         
-        emit onNewBattle
+        emit onNewDragon
         (
             curRoundNumber
         );
@@ -179,12 +178,10 @@ contract Chapter1 is Ownable{
         curRound.ht = curRound.ht.add(msg.value);
         
         safeBoxs[_pId].addr = msg.sender;
-        safeBoxs[_pId].total = safeBoxs[_pId].total.add(msg.value);
         safeBoxs[_pId].records[curRoundNumber] = safeBoxs[_pId].records[curRoundNumber].add(msg.value);
         
         // is over?
         bool _o = over();
-        
         
         emit onBattle
         (
@@ -194,8 +191,6 @@ contract Chapter1 is Ownable{
             _o,
             curRound.ht
         );
-        
-        
     }
     
     function getPID(address _addr)
@@ -243,7 +238,7 @@ contract Chapter1 is Ownable{
     function getPlayerInfo()
         isHuman()
         public
-        returns(playerInfo memory)
+        returns(PlayerInfo memory)
     {
          uint _pId = getPID(msg.sender);
          uint256 _collectable = 0;
@@ -257,7 +252,7 @@ contract Chapter1 is Ownable{
                 _collectable = _deposit.sub(_diff);
             }
          }
-         return playerInfo(players[_pId],safeBoxs[_pId].earned,safeBoxs[_pId].records[curRoundNumber],_collectable);
+         return PlayerInfo(players[_pId],safeBoxs[_pId].earned,safeBoxs[_pId].records[curRoundNumber],_collectable);
     }
     
     function getRoundInfo(uint256 _r)
