@@ -12,7 +12,7 @@ contract Chapter1 is Ownable{
     using NameFilter for string;
     
     uint8 race = 0;
-    uint256 initHp = 1000;
+    uint256 initHp = 1234;
     uint256 registrationFee = 10 ether; // price to register a name
     
     uint256 public pID = 0;// total number of players;
@@ -161,9 +161,9 @@ contract Chapter1 is Ownable{
         if(allInvest.length == 0){
             uint256 _pidDev = getPID(owner());
             safeBoxs[_pidDev].addr = owner();
-            safeBoxs[_pidDev].earned = safeBoxs[_pidDev].earned.add(msg.value.mul(45).div(100));  
+            safeBoxs[_pidDev].earned = safeBoxs[_pidDev].earned.add(msg.value.mul(50).div(100));  
         }else{
-            distribute(msg.value.mul(45).div(100));
+            distribute(msg.value.mul(50).div(100));
         }
         
         //2:save player deposit;
@@ -282,16 +282,15 @@ contract Chapter1 is Ownable{
         pastRound[curRoundNumber] = curRound;
         
         uint256 _30p = curRound.ht.mul(30).div(100);
-        uint256 _15p = curRound.ht.mul(15).div(100);
         uint256 _10p = curRound.ht.mul(10).div(100);
         
         //reward repel 10%;
         uint256 _pIdxRepel = pIDxAddr[luckBoxs[curRoundNumber].repel];
-        safeBoxs[_pIdxRepel].earned = safeBoxs[_pIdxRepel].earned.add(_15p);
+        safeBoxs[_pIdxRepel].earned = safeBoxs[_pIdxRepel].earned.add(_10p);
         DLData.Player storage _playerxRepel = players[_pIdxRepel];
         _playerxRepel.badges.push(2);
         
-        //reward winner 35%;
+        //reward winner 30%;
         uint256 _pIdxWinner = pIDxAddr[luckBoxs[curRoundNumber].winner];
         safeBoxs[_pIdxWinner].earned = safeBoxs[_pIdxWinner].earned.add(_30p);
         DLData.Player storage _playerxWinner = players[_pIdxWinner];
