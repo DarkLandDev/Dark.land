@@ -14,6 +14,6 @@ DARK.LAND 是Dark团队开发的一款基于区块链的中土世界观故事流
 
 官方地址/website：[www.dark.land](www.dark.land)
 
-联系我们/contact：suport@dark.land
+联系我们/contact：support@dark.land
 
 审计报告/audit：

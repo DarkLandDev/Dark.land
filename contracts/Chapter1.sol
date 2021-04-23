@@ -146,6 +146,37 @@ contract Chapter1 is Ownable{
         );
     }
     
+    function destroDragon()
+        onlyOwner()
+        public
+    {
+        //Randomly generate Repel and Winner
+        uint256 _len = allInvest.length;
+        uint256 _repelID = randMod(_len).sub(1);
+        if(luckBoxs[curRoundNumber].repel == address(0) && 0 <= _repelID && _repelID < _len){
+            curDragon.endT = block.timestamp;
+            curDragon.hide = true;
+            //luck boy
+            luckBoxs[curRoundNumber].repel = players[allInvest[_repelID].pID].addr;
+        }
+        uint256 _winnerID = randMod(_len).sub(1);
+        if(luckBoxs[curRoundNumber].winner == address(0) && 0 <= _winnerID && _winnerID < _len && _winnerID != _repelID){
+            curDragon.alive = false;
+            luckBoxs[curRoundNumber].winner = players[allInvest[_winnerID].pID].addr;
+            
+            endRound();
+            
+            emit onBattle
+            (
+            curRoundNumber,
+            luckBoxs[curRoundNumber].repel,
+            luckBoxs[curRoundNumber].winner,
+            true,
+            curRound.ht
+            );
+        }
+    }
+    
     function battle()
         isActivated()
         isHuman()
