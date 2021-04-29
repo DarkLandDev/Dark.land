@@ -128,9 +128,6 @@ contract Chapter1 is Ownable{
         uint256 _now = block.timestamp;
         uint256 _R = curRoundNumber.add(1);
         uint256 _hp = randMod(_r).mul(initHp).mul(10 ** 18);
-        if(curRoundNumber > 0){
-            _hp = _hp.add(deadDragon[curRoundNumber].hp);
-        }
         
         uint256 _sleep = randMod(_h).mul(60);//s
         curDragon = Dragon(_R,_hp,_sleep,true,_now,false);
@@ -146,34 +143,16 @@ contract Chapter1 is Ownable{
         );
     }
     
-    function destroDragon()
+    function destroyDragon()
         onlyOwner()
         public
     {
-        //Randomly generate Repel and Winner
-        uint256 _len = allInvest.length;
-        uint256 _repelID = randMod(_len).sub(1);
-        if(luckBoxs[curRoundNumber].repel == address(0) && 0 <= _repelID && _repelID < _len){
+        //Dev destroy Dragon.
+        if(luckBoxs[curRoundNumber].repel == address(0)){
             curDragon.endT = block.timestamp;
             curDragon.hide = true;
-            //luck boy
-            luckBoxs[curRoundNumber].repel = players[allInvest[_repelID].pID].addr;
-        }
-        uint256 _winnerID = randMod(_len).sub(1);
-        if(luckBoxs[curRoundNumber].winner == address(0) && 0 <= _winnerID && _winnerID < _len && _winnerID != _repelID){
-            curDragon.alive = false;
-            luckBoxs[curRoundNumber].winner = players[allInvest[_winnerID].pID].addr;
-            
-            endRound();
-            
-            emit onBattle
-            (
-            curRoundNumber,
-            luckBoxs[curRoundNumber].repel,
-            luckBoxs[curRoundNumber].winner,
-            true,
-            curRound.ht
-            );
+            //reward Dev
+            luckBoxs[curRoundNumber].repel = owner();
         }
     }
     
