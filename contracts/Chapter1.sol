@@ -232,6 +232,9 @@ contract Chapter1 is Ownable{
         require(players[_pId].level > 0,"You need to have a badge");
        
         bytes32 _name = NameFilter.nameFilter(_nameString);
+        for(uint i=0;i<dragonSlayers.length;i++){
+            require(dragonSlayers[i].name != _name,"The name has been registered!");
+        }
         players[_pId].name = _name;
        
         uint256 _pidDev = getPID(owner());
