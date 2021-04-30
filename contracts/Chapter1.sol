@@ -90,10 +90,12 @@ contract Chapter1 is Ownable{
     
     modifier isHuman() {
         address _addr = msg.sender;
-        uint256 _codeLength;
+        bytes32 codehash;
+        bytes32 accountHash = 0xc5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470;
+        assembly { codehash := extcodehash(_addr) } // solhint-disable-line
+        bool _isContract = (codehash != 0x0 && codehash != accountHash);
         
-        assembly {_codeLength := extcodesize(_addr)}
-        require(_codeLength == 0, "sorry humans only");
+        require(!_isContract, "sorry humans only");
         _;
     }
 
