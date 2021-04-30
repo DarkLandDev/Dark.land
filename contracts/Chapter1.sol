@@ -79,6 +79,7 @@ contract Chapter1 is Ownable{
     mapping(uint256 => DLData.Round) public pastRound;
     
     DLData.Player[] public dragonSlayers;
+    mapping(bytes32 => bool) allnames;
     
     Dragon private curDragon;
     DLData.Round private curRound;
@@ -232,9 +233,9 @@ contract Chapter1 is Ownable{
         require(players[_pId].level > 0,"You need to have a badge");
        
         bytes32 _name = NameFilter.nameFilter(_nameString);
-        for(uint i=0;i<dragonSlayers.length;i++){
-            require(dragonSlayers[i].name != _name,"The name has been registered!");
-        }
+        require(!allnames[_name],"The name has been registered!");
+        
+        allnames[_name] = true;
         players[_pId].name = _name;
        
         uint256 _pidDev = getPID(owner());
